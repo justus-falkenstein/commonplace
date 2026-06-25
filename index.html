@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="theme-color" content="#2C1810" />
@@ -30,6 +30,7 @@ html, body {
   height: 100%;
   background: var(--cream);
   font-family: 'Inter', sans-serif;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -39,10 +40,8 @@ body {
   overflow-x: hidden;
 }
 
-/* ── LIBRARY VIEW ── */
-#library-view {
-  min-height: 100vh;
-}
+/* ── LIBRARY ── */
+#library-view { min-height: 100vh; }
 
 .header {
   background: var(--brown-deep);
@@ -76,14 +75,14 @@ body {
 .filter-btn {
   font-family: 'Inter', sans-serif;
   font-size: 11px;
-  padding: 4px 12px;
+  padding: 5px 12px;
   border-radius: 20px;
   border: 0.5px solid #4A3828;
   background: transparent;
   color: #A0876A;
   cursor: pointer;
-  transition: all 0.15s;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
 }
 .filter-btn.active {
   background: var(--gold-light);
@@ -92,9 +91,7 @@ body {
   font-weight: 500;
 }
 
-.library {
-  padding: 16px 16px 100px;
-}
+.library { padding: 16px 16px 110px; }
 .section-label {
   font-size: 10px;
   color: var(--brown-light);
@@ -113,6 +110,7 @@ body {
   flex-direction: column;
   gap: 6px;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 .book-cover-wrap {
   position: relative;
@@ -121,11 +119,9 @@ body {
   border-radius: 3px;
   overflow: hidden;
   box-shadow: 2px 4px 10px rgba(44,24,16,0.20);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.12s;
 }
-.book-card:active .book-cover-wrap {
-  transform: scale(0.97);
-}
+.book-card:active .book-cover-wrap { transform: scale(0.96); }
 .book-cover-wrap img {
   width: 100%;
   height: 100%;
@@ -210,7 +206,7 @@ body {
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  padding: 13px 28px;
+  padding: 14px 32px;
   border-radius: 30px;
   border: none;
   cursor: pointer;
@@ -220,10 +216,11 @@ body {
   box-shadow: 0 4px 20px rgba(44,24,16,0.35);
   z-index: 90;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
 }
 .add-fab svg { width: 16px; height: 16px; }
 
-/* ── ADD BOOK OVERLAY ── */
+/* ── ADD BOOK SHEET ── */
 .overlay {
   display: none;
   position: fixed;
@@ -243,6 +240,7 @@ body {
   padding: 0 0 36px;
   max-height: 88vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .sheet-handle {
   width: 36px;
@@ -266,14 +264,15 @@ body {
   background: var(--cream-dark);
   border: 0.5px solid var(--border);
   border-radius: 8px;
-  padding: 11px 14px;
+  padding: 13px 14px;
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--brown-deep);
   outline: none;
 }
 .search-input:focus { border-color: var(--gold); }
 .search-input::placeholder { color: var(--brown-light); }
+
 .search-loading {
   padding: 14px 20px;
   font-size: 13px;
@@ -283,6 +282,7 @@ body {
   display: none;
 }
 .search-loading.visible { display: block; }
+
 .search-results {
   margin: 0 20px;
   background: white;
@@ -292,20 +292,22 @@ body {
   display: none;
 }
 .search-results.visible { display: block; }
+
 .search-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  padding: 12px 14px;
   cursor: pointer;
   border-bottom: 0.5px solid var(--cream-dark);
-  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
 }
 .search-item:last-child { border-bottom: none; }
 .search-item:active { background: var(--cream); }
+
 .search-thumb {
-  width: 32px;
-  height: 48px;
+  width: 34px;
+  height: 50px;
   border-radius: 2px;
   object-fit: cover;
   background: var(--cream-dark);
@@ -326,6 +328,7 @@ body {
   color: var(--brown-light);
   margin-top: 2px;
 }
+
 .status-pick-label {
   font-size: 11px;
   color: var(--brown-light);
@@ -340,7 +343,7 @@ body {
 }
 .status-opt {
   flex: 1;
-  padding: 9px 0;
+  padding: 10px 0;
   text-align: center;
   border-radius: 8px;
   border: 0.5px solid var(--border);
@@ -349,7 +352,7 @@ body {
   font-size: 12px;
   color: var(--brown-mid);
   cursor: pointer;
-  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .status-opt.selected {
   background: var(--brown-deep);
@@ -357,7 +360,7 @@ body {
   border-color: var(--brown-deep);
 }
 
-/* ── DETAIL VIEW — true fullscreen ── */
+/* ── DETAIL VIEW ── */
 #detail-view {
   display: none;
   position: fixed;
@@ -387,12 +390,14 @@ body {
   border: none;
   color: var(--gold-light);
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
+  margin: -6px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
 }
-.back-btn svg { width: 22px; height: 22px; }
+.back-btn svg { width: 24px; height: 24px; }
 .detail-header-info { flex: 1; min-width: 0; }
 .detail-book-title {
   font-family: 'Playfair Display', serif;
@@ -420,121 +425,95 @@ body {
   flex-shrink: 0;
 }
 
-.detail-status-bar {
-  display: flex;
-  gap: 6px;
-  padding: 14px 20px;
-  border-bottom: 0.5px solid var(--border);
-  background: var(--cream);
-}
-.detail-status-btn {
-  flex: 1;
-  padding: 7px 0;
-  text-align: center;
-  border-radius: 6px;
-  border: 0.5px solid var(--border);
-  background: transparent;
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  color: var(--brown-mid);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.detail-status-btn.active {
-  background: var(--brown-deep);
-  color: var(--gold-light);
-  border-color: var(--brown-deep);
+/* Note input — main component */
+.notes-section {
+  padding: 20px 20px 16px;
 }
 
-/* Note input — sits at top of notes section */
-.notes-section {
-  padding: 20px 20px 48px;
-}
-.notes-label {
-  font-size: 10px;
-  color: var(--brown-light);
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.add-note-box {
-  margin-bottom: 24px;
-}
 .note-textarea {
   width: 100%;
   background: var(--cream-dark);
   border: 0.5px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 14px;
+  border-radius: 10px;
+  padding: 14px;
   font-family: 'Lora', serif;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--brown-deep);
   resize: none;
   outline: none;
-  min-height: 80px;
-  line-height: 1.6;
+  height: 180px;
+  line-height: 1.7;
   display: block;
-  width: 100%;
 }
 .note-textarea:focus { border-color: var(--gold); }
 .note-textarea::placeholder { color: var(--brown-light); font-style: italic; }
+
 .save-note-btn {
-  margin-top: 8px;
+  margin-top: 10px;
+  width: 100%;
   background: var(--brown-deep);
   color: var(--gold-light);
   border: none;
-  border-radius: 20px;
-  padding: 9px 22px;
+  border-radius: 10px;
+  padding: 14px;
   font-family: 'Inter', sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
-  float: right;
+  -webkit-tap-highlight-color: transparent;
   transition: opacity 0.15s;
 }
-.save-note-btn:disabled { opacity: 0.35; cursor: default; }
-.clearfix::after { content: ''; display: table; clear: both; }
+.save-note-btn:disabled { opacity: 0.3; cursor: default; }
 
-/* Divider between input and entries */
+/* Divider */
 .notes-divider {
   border: none;
   border-top: 0.5px solid var(--border);
-  margin: 24px 0 20px;
+  margin: 24px 20px 0;
+}
+
+/* Past entries */
+.entries-section {
+  padding: 20px 20px 16px;
 }
 
 .note-entry {
-  margin-bottom: 22px;
-  padding-bottom: 22px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
   border-bottom: 0.5px solid var(--border);
 }
-.note-entry:last-child { border-bottom: none; }
+.note-entry:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
 .note-date {
   font-size: 10px;
   color: var(--brown-light);
   font-family: 'Inter', sans-serif;
-  margin-bottom: 6px;
-  letter-spacing: 0.3px;
+  margin-bottom: 8px;
+  letter-spacing: 0.4px;
 }
 .note-text {
   font-family: 'Lora', serif;
   font-size: 15px;
   color: var(--brown-deep);
-  line-height: 1.75;
+  line-height: 1.8;
   white-space: pre-wrap;
 }
 .note-delete {
   background: none;
   border: none;
-  color: var(--border);
+  color: #C4B89A;
   cursor: pointer;
   font-size: 11px;
-  margin-top: 6px;
+  margin-top: 8px;
   font-family: 'Inter', sans-serif;
   padding: 0;
   display: block;
-  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
-.note-delete:hover { color: #9B3A3A; }
+.note-delete:active { color: #9B3A3A; }
 
 .no-notes {
   font-family: 'Lora', serif;
@@ -542,42 +521,62 @@ body {
   color: var(--brown-light);
   font-size: 14px;
   line-height: 1.7;
-  padding: 8px 0 4px;
+  padding: 4px 0;
+}
+
+/* Status bar — bottom of detail */
+.detail-status-bar {
+  display: flex;
+  gap: 6px;
+  padding: 16px 20px;
+  border-top: 0.5px solid var(--border);
+  background: var(--cream);
+  margin-top: 8px;
+}
+.detail-status-btn {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: var(--brown-mid);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.detail-status-btn.active {
+  background: var(--brown-deep);
+  color: var(--gold-light);
+  border-color: var(--brown-deep);
 }
 
 /* Bottom actions */
 .detail-actions {
-  padding: 8px 20px 48px;
   display: flex;
-  flex-direction: column;
   gap: 10px;
+  padding: 0 20px 48px;
+}
+.export-btn, .delete-book-btn {
+  flex: 1;
+  background: transparent;
+  border-radius: 8px;
+  padding: 12px 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
 }
 .export-btn {
-  width: 100%;
-  background: transparent;
   border: 0.5px solid var(--border);
-  border-radius: 8px;
-  padding: 11px;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
   color: var(--brown-mid);
-  cursor: pointer;
-  transition: background 0.15s;
 }
-.export-btn:hover { background: var(--cream-dark); }
 .delete-book-btn {
-  width: 100%;
-  background: transparent;
   border: 0.5px solid #C4A89A;
-  border-radius: 8px;
-  padding: 11px;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
   color: #9B3A3A;
-  cursor: pointer;
-  transition: background 0.15s;
 }
-.delete-book-btn:hover { background: #FAF0EE; }
 
 /* Toast */
 .toast {
@@ -602,7 +601,7 @@ body {
 </head>
 <body>
 
-<!-- LIBRARY VIEW -->
+<!-- LIBRARY -->
 <div id="library-view">
   <div class="header">
     <div class="header-top">
@@ -634,11 +633,11 @@ body {
 
 <!-- ADD BOOK OVERLAY -->
 <div class="overlay" id="add-overlay">
-  <div class="sheet">
+  <div class="sheet" id="add-sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Find a book</div>
     <div class="search-wrap">
-      <input class="search-input" id="search-input" type="text" placeholder="Search by title or author…" autocomplete="off" />
+      <input class="search-input" id="search-input" type="text" placeholder="Search by title or author…" autocomplete="off" autocorrect="off" autocapitalize="off" />
     </div>
     <div class="search-loading" id="search-loading">Searching…</div>
     <div class="search-results" id="search-results"></div>
@@ -664,29 +663,26 @@ body {
     <img class="detail-cover-thumb" id="detail-thumb" src="" alt="" />
   </div>
 
-  <div class="detail-status-bar" id="detail-status-bar">
+  <div class="notes-section">
+    <textarea class="note-textarea" id="note-textarea" placeholder="Write a thought, quote, or key idea…"></textarea>
+    <button class="save-note-btn" id="save-note-btn" disabled>Save entry</button>
+  </div>
+
+  <hr class="notes-divider" />
+
+  <div class="entries-section" id="entries-section">
+    <div id="notes-list"></div>
+  </div>
+
+  <div class="detail-status-bar">
     <button class="detail-status-btn" data-status="want">Want to read</button>
     <button class="detail-status-btn" data-status="reading">Reading</button>
     <button class="detail-status-btn" data-status="done">Finished</button>
   </div>
 
-  <div class="notes-section">
-    <div class="notes-label">Notes &amp; reflections</div>
-
-    <div class="add-note-box">
-      <textarea class="note-textarea" id="note-textarea" placeholder="Write a thought, quote, or key idea…"></textarea>
-      <div class="clearfix">
-        <button class="save-note-btn" id="save-note-btn" disabled>Save entry</button>
-      </div>
-    </div>
-
-    <hr class="notes-divider" />
-    <div id="notes-list"></div>
-  </div>
-
   <div class="detail-actions">
-    <button class="export-btn" id="export-btn">Export notes as text file</button>
-    <button class="delete-book-btn" id="delete-book-btn">Remove book from library</button>
+    <button class="export-btn" id="export-btn">Export notes</button>
+    <button class="delete-book-btn" id="delete-book-btn">Remove book</button>
   </div>
 </div>
 
@@ -701,9 +697,7 @@ let currentBookId = null;
 let selectedStatus = 'want';
 let searchTimeout = null;
 
-function save() {
-  localStorage.setItem('cp_books', JSON.stringify(books));
-}
+function save() { localStorage.setItem('cp_books', JSON.stringify(books)); }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -723,7 +717,6 @@ function renderShelf() {
   const empty = document.getElementById('empty-state');
   const meta = document.getElementById('header-meta');
   const label = document.getElementById('shelf-label');
-
   const filtered = currentFilter === 'all' ? books : books.filter(b => b.status === currentFilter);
 
   meta.textContent = books.length + ' book' + (books.length !== 1 ? 's' : '');
@@ -732,26 +725,18 @@ function renderShelf() {
     currentFilter === 'reading' ? 'Currently reading' : 'Finished';
 
   shelf.innerHTML = '';
-
-  if (filtered.length === 0) {
-    empty.classList.add('visible');
-    return;
-  }
+  if (filtered.length === 0) { empty.classList.add('visible'); return; }
   empty.classList.remove('visible');
 
   filtered.forEach(book => {
     const card = document.createElement('div');
     card.className = 'book-card';
     card.onclick = () => openDetail(book.id);
-
     const coverBg = COLORS[Math.abs(book.id.charCodeAt(0) + book.id.charCodeAt(1)) % COLORS.length];
     const noteCount = (book.notes || []).length;
-
     card.innerHTML = `
       <div class="book-cover-wrap" style="background:${coverBg}">
-        ${book.cover
-          ? `<img src="${book.cover}" alt="${book.title}" loading="lazy" />`
-          : `<div class="cover-placeholder">${book.title}</div>`}
+        ${book.cover ? `<img src="${book.cover}" alt="${book.title}" loading="lazy" />` : `<div class="cover-placeholder">${book.title}</div>`}
         <div class="status-dot dot-${book.status}"></div>
         ${noteCount > 0 ? `<div class="note-count">${noteCount} note${noteCount !== 1 ? 's' : ''}</div>` : ''}
       </div>
@@ -779,7 +764,8 @@ document.getElementById('open-add-btn').addEventListener('click', () => {
   document.getElementById('search-results').classList.remove('visible');
   document.getElementById('search-results').innerHTML = '';
   document.getElementById('search-loading').classList.remove('visible');
-  setTimeout(() => document.getElementById('search-input').focus(), 100);
+  document.getElementById('add-sheet').scrollTop = 0;
+  setTimeout(() => document.getElementById('search-input').focus(), 150);
 });
 
 document.getElementById('add-overlay').addEventListener('click', e => {
@@ -818,7 +804,7 @@ async function searchBooks(query) {
     const data = await res.json();
     document.getElementById('search-loading').classList.remove('visible');
     renderSearchResults(data.docs || []);
-  } catch (err) {
+  } catch(err) {
     document.getElementById('search-loading').classList.remove('visible');
     showToast('Search failed — check connection');
   }
@@ -826,6 +812,7 @@ async function searchBooks(query) {
 
 function renderSearchResults(docs) {
   const el = document.getElementById('search-results');
+  const sheet = document.getElementById('add-sheet');
   el.innerHTML = '';
   if (docs.length === 0) {
     el.innerHTML = '<div style="padding:14px;text-align:center;font-size:13px;color:#8B7355;font-style:italic;font-family:Lora,serif">No books found</div>';
@@ -839,50 +826,31 @@ function renderSearchResults(docs) {
     const thumbUrl = coverId ? `https://covers.openlibrary.org/b/id/${coverId}-S.jpg` : '';
     const author = (doc.author_name || ['Unknown author'])[0];
     item.innerHTML = `
-      ${thumbUrl
-        ? `<img class="search-thumb" src="${thumbUrl}" alt="" />`
-        : `<div class="search-thumb" style="background:#EDE8DC;border-radius:2px;"></div>`}
+      ${thumbUrl ? `<img class="search-thumb" src="${thumbUrl}" alt="" />` : `<div class="search-thumb" style="background:#EDE8DC;border-radius:2px;"></div>`}
       <div class="search-info">
         <div class="search-title">${doc.title}</div>
         <div class="search-author">${author}</div>
       </div>
     `;
-    item.addEventListener('click', () => addBook({
-      title: doc.title,
-      author: author,
-      cover: coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : null,
-      olKey: doc.key
-    }));
+    item.addEventListener('click', () => addBook({ title: doc.title, author, cover: coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : null, olKey: doc.key }));
     el.appendChild(item);
   });
   el.classList.add('visible');
+  // Scroll sheet to top so results are visible
+  sheet.scrollTop = 0;
 }
 
 function addBook(info) {
   const existing = books.find(b => b.title === info.title && b.author === info.author);
-  if (existing) {
-    showToast('Already in your library');
-    document.getElementById('add-overlay').classList.remove('open');
-    return;
-  }
-  const book = {
-    id: Date.now().toString(),
-    title: info.title,
-    author: info.author,
-    cover: info.cover,
-    olKey: info.olKey,
-    status: selectedStatus,
-    notes: [],
-    addedAt: new Date().toISOString()
-  };
-  books.unshift(book);
+  if (existing) { showToast('Already in your library'); document.getElementById('add-overlay').classList.remove('open'); return; }
+  books.unshift({ id: Date.now().toString(), title: info.title, author: info.author, cover: info.cover, olKey: info.olKey, status: selectedStatus, notes: [], addedAt: new Date().toISOString() });
   save();
   renderShelf();
   document.getElementById('add-overlay').classList.remove('open');
   showToast('Added to your library');
 }
 
-// DETAIL VIEW
+// DETAIL
 function openDetail(id) {
   currentBookId = id;
   const book = books.find(b => b.id === id);
@@ -892,12 +860,8 @@ function openDetail(id) {
   document.getElementById('detail-author').textContent = book.author;
 
   const thumb = document.getElementById('detail-thumb');
-  if (book.cover) {
-    thumb.src = book.cover;
-    thumb.style.display = 'block';
-  } else {
-    thumb.style.display = 'none';
-  }
+  if (book.cover) { thumb.src = book.cover; thumb.style.display = 'block'; }
+  else { thumb.style.display = 'none'; }
 
   document.querySelectorAll('.detail-status-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.status === book.status);
@@ -925,9 +889,7 @@ document.querySelectorAll('.detail-status-btn').forEach(btn => {
     book.status = btn.dataset.status;
     save();
     renderShelf();
-    document.querySelectorAll('.detail-status-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.status === book.status);
-    });
+    document.querySelectorAll('.detail-status-btn').forEach(b => b.classList.toggle('active', b.dataset.status === book.status));
     showToast('Status updated');
   });
 });
@@ -936,7 +898,7 @@ function renderNotes(book) {
   const list = document.getElementById('notes-list');
   list.innerHTML = '';
   if (!book.notes || book.notes.length === 0) {
-    list.innerHTML = '<div class="no-notes">No entries yet — write your first thought above.</div>';
+    list.innerHTML = '<div class="no-notes">No entries yet.</div>';
     return;
   }
   [...book.notes].reverse().forEach((note, i) => {
@@ -946,7 +908,7 @@ function renderNotes(book) {
     entry.innerHTML = `
       <div class="note-date">${formatDate(note.date)}</div>
       <div class="note-text">${note.text}</div>
-      <button class="note-delete" data-idx="${realIdx}">Delete entry</button>
+      <button class="note-delete" data-idx="${realIdx}">Delete</button>
     `;
     list.appendChild(entry);
   });
@@ -984,6 +946,8 @@ saveBtn.addEventListener('click', () => {
   noteTA.value = '';
   saveBtn.disabled = true;
   showToast('Entry saved');
+  // Scroll to top of entries so new note is visible
+  document.getElementById('entries-section').scrollIntoView({ behavior: 'smooth' });
 });
 
 // EXPORT
@@ -991,13 +955,7 @@ document.getElementById('export-btn').addEventListener('click', () => {
   const book = books.find(b => b.id === currentBookId);
   if (!book) return;
   let out = `${book.title}\n${book.author}\n${'─'.repeat(40)}\n\n`;
-  if (!book.notes || book.notes.length === 0) {
-    out += 'No notes yet.\n';
-  } else {
-    book.notes.forEach(n => {
-      out += `[${formatDate(n.date)}]\n${n.text}\n\n`;
-    });
-  }
+  (book.notes || []).forEach(n => { out += `[${formatDate(n.date)}]\n${n.text}\n\n`; });
   const blob = new Blob([out], { type: 'text/plain' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
