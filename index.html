@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#2C1810" />
+<title>My Commonplace</title>
+<link rel="apple-touch-icon" id="touch-icon" href="" />
+<script>
+(function(){
+  const c = document.createElement('canvas');
+  c.width = 180; c.height = 180;
+  const ctx = c.getContext('2d');
+  const r = 20;
+  ctx.fillStyle = '#F5F0E8';
+  ctx.beginPath();
+  ctx.moveTo(r,0); ctx.lineTo(180-r,0);
+  ctx.quadraticCurveTo(180,0,180,r);
+  ctx.lineTo(180,180-r);
+  ctx.quadraticCurveTo(180,180,180-r,180);
+  ctx.lineTo(r,180);
+  ctx.quadraticCurveTo(0,180,0,180-r);
+  ctx.lineTo(0,r);
+  ctx.quadraticCurveTo(0,0,r,0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle='#C4B89A'; ctx.lineWidth=2; ctx.stroke();
+  ctx.strokeStyle='#D4958A'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(38,10); ctx.lineTo(38,170); ctx.stroke();
+  ctx.strokeStyle='#C4B89A'; ctx.lineWidth=1;
+  [52,72,92,112,132,152].forEach(y=>{
+    ctx.beginPath(); ctx.moveTo(48,y); ctx.lineTo(162,y); ctx.stroke();
+  });
+  document.getElementById('touch-icon').href = c.toDataURL('image/png');
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #F5F0E8;
+  --cream-dark: #EDE8DC;
+  --brown-deep: #2C1810;
+  --brown-mid: #6B5B45;
+  --brown-light: #8B7355;
+  --gold: #8B6914;
+  --gold-light: #E8D5A3;
+  --border: #D4C9B0;
+  --dot-reading: #8B6914;
+  --dot-done: #4A7C4E;
+  --dot-want: #B8A98A;
+}
+html, body {
+  height: 100%;
+  background: var(--cream);
+  font-family: 'Inter', sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ── AUTH ── */
+#auth-view {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 28px;
+}
+.auth-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: var(--brown-deep);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.auth-sub {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  color: var(--brown-light);
+  font-size: 14px;
+  margin-bottom: 40px;
+}
+.auth-card {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  border: 0.5px solid var(--border);
+  padding: 24px;
+}
+.auth-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 0.5px solid var(--border);
+}
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--brown-light);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.auth-tab.active {
+  color: var(--brown-deep);
+  border-bottom-color: var(--brown-deep);
+  font-weight: 500;
+}
+.auth-field {
+  margin-bottom: 14px;
+}
+.auth-label {
+  font-size: 11px;
+  color: var(--brown-light);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+.auth-input {
+  width: 100%;
+  background: var(--cream);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: var(--brown-deep);
+  outline: none;
+}
+.auth-input:focus { border-color: var(--gold); }
+.auth-btn {
+  width: 100%;
+  background: var(--brown-deep);
+  color: var(--gold-light);
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.auth-btn:disabled { opacity: 0.4; cursor: default; }
+.auth-error {
+  font-size: 12px;
+  color: #9B3A3A;
+  font-family: 'Lora', serif;
+  font-style: italic;
+  margin-top: 10px;
+  text-align: center;
+  min-height: 18px;
+}
+
+/* ── LIBRARY ── */
+#library-view { min-height: 100vh; display: none; }
+.header {
+  background: var(--brown-deep);
+  padding: calc(18px + env(safe-area-inset-top)) 20px 14px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.app-title {
+  font-family: 'Playfair Display', serif;
+  color: var(--gold-light);
+  font-size: 22px;
+  font-weight: 500;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-meta {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  color: var(--brown-light);
+  font-size: 12px;
+}
+.signout-btn {
+  background: none;
+  border: none;
+  color: #6B4A3A;
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  padding: 0;
+}
+.filters { display: flex; gap: 6px; }
+.filter-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 0.5px solid #4A3828;
+  background: transparent;
+  color: #A0876A;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.filter-btn.active {
+  background: var(--gold-light);
+  color: var(--brown-deep);
+  border-color: var(--gold-light);
+  font-weight: 500;
+}
+.library { padding: 16px 16px 110px; }
+.section-label {
+  font-size: 10px;
+  color: var(--brown-light);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-left: 2px;
+}
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.book-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.book-cover-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 2px 4px 10px rgba(44,24,16,0.20);
+  transition: transform 0.12s;
+}
+.book-card:active .book-cover-wrap { transform: scale(0.96); }
+.book-cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  padding: 10px;
+  font-family: 'Playfair Display', serif;
+  font-size: 11px;
+  color: rgba(255,255,255,0.75);
+  text-align: center; line-height: 1.4;
+}
+.status-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.5);
+}
+.dot-want { background: var(--dot-want); }
+.dot-reading { background: var(--dot-reading); }
+.dot-done { background: var(--dot-done); }
+.note-count {
+  position: absolute; bottom: 5px; left: 5px;
+  background: rgba(44,24,16,0.75);
+  color: var(--gold-light);
+  font-size: 9px; font-family: 'Inter', sans-serif;
+  padding: 2px 5px; border-radius: 3px;
+}
+.book-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 12px; color: var(--brown-deep);
+  line-height: 1.3; font-weight: 500;
+}
+.book-author { font-family: 'Inter', sans-serif; font-size: 10px; color: var(--brown-light); }
+.empty-state { text-align: center; padding: 48px 24px; display: none; }
+.empty-state.visible { display: block; }
+.empty-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--brown-deep); margin-bottom: 8px; }
+.empty-sub { font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--brown-light); }
+.add-fab {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  background: var(--brown-deep); color: var(--gold-light);
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+  padding: 14px 32px; border-radius: 30px; border: none;
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 20px rgba(44,24,16,0.35);
+  z-index: 90; white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.add-fab svg { width: 16px; height: 16px; }
+
+/* ── ADD BOOK SHEET ── */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(20,10,5,0.55); z-index: 200;
+  align-items: flex-end; justify-content: center;
+}
+.overlay.open { display: flex; }
+.sheet {
+  background: var(--cream); border-radius: 16px 16px 0 0;
+  width: 100%; max-width: 480px;
+  height: 88vh; display: flex; flex-direction: column; overflow: hidden;
+}
+.sheet-top { flex-shrink: 0; padding-bottom: 8px; }
+.sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 12px auto 0; }
+.sheet-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--brown-deep); padding: 16px 20px 12px; font-weight: 500; }
+.search-wrap { padding: 0 20px 8px; }
+.search-input {
+  width: 100%; background: var(--cream-dark);
+  border: 0.5px solid var(--border); border-radius: 8px;
+  padding: 13px 14px; font-family: 'Inter', sans-serif;
+  font-size: 16px; color: var(--brown-deep); outline: none;
+}
+.search-input:focus { border-color: var(--gold); }
+.search-input::placeholder { color: var(--brown-light); }
+.search-loading { padding: 14px 20px; font-size: 13px; color: var(--brown-light); font-style: italic; font-family: 'Lora', serif; display: none; }
+.search-loading.visible { display: block; }
+.search-results {
+  margin: 0 20px; background: white;
+  border-radius: 8px; border: 0.5px solid var(--border);
+  display: none; flex: 1; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.search-results.visible { display: block; }
+.search-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; cursor: pointer;
+  border-bottom: 0.5px solid var(--cream-dark);
+  -webkit-tap-highlight-color: transparent;
+}
+.search-item:last-child { border-bottom: none; }
+.search-item:active { background: var(--cream); }
+.search-thumb { width: 34px; height: 50px; border-radius: 2px; object-fit: cover; background: var(--cream-dark); flex-shrink: 0; }
+.search-info { flex: 1; min-width: 0; }
+.search-title { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--brown-deep); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-author { font-size: 11px; color: var(--brown-light); margin-top: 2px; }
+.status-pick-label { font-size: 11px; color: var(--brown-light); letter-spacing: 1.1px; text-transform: uppercase; padding: 16px 20px 8px; }
+.status-pick { display: flex; gap: 8px; padding: 0 20px; }
+.status-opt {
+  flex: 1; padding: 10px 0; text-align: center;
+  border-radius: 8px; border: 0.5px solid var(--border);
+  background: transparent; font-family: 'Inter', sans-serif;
+  font-size: 12px; color: var(--brown-mid); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.status-opt.selected { background: var(--brown-deep); color: var(--gold-light); border-color: var(--brown-deep); }
+
+/* ── DETAIL VIEW ── */
+#detail-view {
+  display: none; position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--cream); z-index: 400;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#detail-view.open { display: block; }
+.detail-header {
+  background: var(--brown-deep);
+  padding: calc(16px + env(safe-area-inset-top)) 20px 16px;
+  display: flex; align-items: center; gap: 14px;
+  position: sticky; top: 0; z-index: 10;
+}
+.back-btn {
+  background: none; border: none; color: var(--gold-light);
+  cursor: pointer; padding: 6px; margin: -6px;
+  display: flex; align-items: center; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.back-btn svg { width: 24px; height: 24px; }
+.detail-header-info { flex: 1; min-width: 0; }
+.detail-book-title {
+  font-family: 'Playfair Display', serif; color: var(--gold-light);
+  font-size: 16px; font-weight: 500; line-height: 1.2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.detail-book-author { font-family: 'Lora', serif; font-style: italic; color: var(--brown-light); font-size: 12px; margin-top: 2px; }
+.detail-cover-thumb { width: 40px; height: 60px; border-radius: 2px; object-fit: cover; box-shadow: 1px 2px 6px rgba(0,0,0,0.3); flex-shrink: 0; }
+.notes-section { padding: 20px 20px 16px; }
+.note-textarea {
+  width: 100%; background: var(--cream-dark);
+  border: 0.5px solid var(--border); border-radius: 10px;
+  padding: 14px; font-family: 'Lora', serif;
+  font-size: 16px; color: var(--brown-deep);
+  resize: none; outline: none; height: 180px; line-height: 1.7; display: block;
+}
+.note-textarea:focus { border-color: var(--gold); }
+.note-textarea::placeholder { color: var(--brown-light); font-style: italic; }
+.save-note-btn {
+  margin-top: 10px; width: 100%;
+  background: var(--brown-deep); color: var(--gold-light);
+  border: none; border-radius: 10px; padding: 14px;
+  font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 500;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.15s;
+}
+.save-note-btn:disabled { opacity: 0.3; cursor: default; }
+.notes-divider { border: none; border-top: 0.5px solid var(--border); margin: 24px 20px 0; }
+.entries-section { padding: 20px 20px 16px; }
+.note-entry { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 0.5px solid var(--border); }
+.note-entry:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.note-date { font-size: 10px; color: var(--brown-light); font-family: 'Inter', sans-serif; margin-bottom: 8px; letter-spacing: 0.4px; }
+.note-text { font-family: 'Lora', serif; font-size: 15px; color: var(--brown-deep); line-height: 1.8; white-space: pre-wrap; }
+.note-delete { background: none; border: none; color: #C4B89A; cursor: pointer; font-size: 11px; margin-top: 8px; font-family: 'Inter', sans-serif; padding: 0; display: block; }
+.note-delete:active { color: #9B3A3A; }
+.no-notes { font-family: 'Lora', serif; font-style: italic; color: var(--brown-light); font-size: 14px; line-height: 1.7; padding: 4px 0; }
+.detail-status-bar {
+  display: flex; gap: 6px; padding: 16px 20px;
+  border-top: 0.5px solid var(--border); background: var(--cream); margin-top: 8px;
+}
+.detail-status-btn {
+  flex: 1; padding: 10px 0; text-align: center;
+  border-radius: 8px; border: 0.5px solid var(--border);
+  background: transparent; font-family: 'Inter', sans-serif;
+  font-size: 11px; color: var(--brown-mid); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.detail-status-btn.active { background: var(--brown-deep); color: var(--gold-light); border-color: var(--brown-deep); }
+.detail-actions { display: flex; gap: 10px; padding: 0 20px 48px; }
+.export-btn, .delete-book-btn {
+  flex: 1; background: transparent; border-radius: 8px;
+  padding: 12px 8px; font-family: 'Inter', sans-serif;
+  font-size: 12px; cursor: pointer; text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.export-btn { border: 0.5px solid var(--border); color: var(--brown-mid); }
+.delete-book-btn { border: 0.5px solid #C4A89A; color: #9B3A3A; }
+
+/* Loading spinner */
+.loading-screen {
+  position: fixed; inset: 0; background: var(--cream);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; flex-direction: column; gap: 14px;
+}
+.loading-screen.hidden { display: none; }
+.spinner {
+  width: 28px; height: 28px;
+  border: 2px solid var(--border);
+  border-top-color: var(--brown-deep);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-label { font-family: 'Lora', serif; font-style: italic; font-size: 13px; color: var(--brown-light); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%);
+  background: var(--brown-deep); color: var(--gold-light);
+  font-family: 'Inter', sans-serif; font-size: 13px;
+  padding: 10px 20px; border-radius: 20px;
+  z-index: 999; opacity: 0; transition: opacity 0.2s;
+  pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loading-screen">
+  <div class="spinner"></div>
+  <div class="loading-label">Opening your commonplace…</div>
+</div>
+
+<!-- AUTH VIEW -->
+<div id="auth-view" style="display:none">
+  <div class="auth-logo">My Commonplace</div>
+  <div class="auth-sub">A place for books and ideas</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-signin">Sign in</button>
+      <button class="auth-tab" id="tab-signup">Create account</button>
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">Email</label>
+      <input class="auth-input" id="auth-email" type="email" placeholder="your@email.com" autocapitalize="off" autocorrect="off" />
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">Password</label>
+      <input class="auth-input" id="auth-password" type="password" placeholder="••••••••" />
+    </div>
+    <button class="auth-btn" id="auth-submit">Sign in</button>
+    <div class="auth-error" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- LIBRARY VIEW -->
+<div id="library-view">
+  <div class="header">
+    <div class="header-top">
+      <span class="app-title">My Commonplace</span>
+      <div class="header-right">
+        <span class="header-meta" id="header-meta">0 books</span>
+        <button class="signout-btn" id="signout-btn">Sign out</button>
+      </div>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="want">Want to read</button>
+      <button class="filter-btn" data-filter="reading">Reading</button>
+      <button class="filter-btn" data-filter="done">Finished</button>
+    </div>
+  </div>
+  <div class="library">
+    <div class="section-label" id="shelf-label">Your library</div>
+    <div class="shelf" id="shelf"></div>
+    <div class="empty-state" id="empty-state">
+      <div class="empty-title">Your shelf awaits</div>
+      <div class="empty-sub">Add a book to begin your commonplace.</div>
+    </div>
+  </div>
+  <button class="add-fab" id="open-add-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add a book
+  </button>
+</div>
+
+<!-- ADD BOOK OVERLAY -->
+<div class="overlay" id="add-overlay">
+  <div class="sheet" id="add-sheet">
+    <div class="sheet-top">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Find a book</div>
+      <div class="search-wrap">
+        <input class="search-input" id="search-input" type="text" placeholder="Search by title or author…" autocomplete="off" autocorrect="off" autocapitalize="off" />
+      </div>
+      <div class="status-pick-label">Add as</div>
+      <div class="status-pick">
+        <button class="status-opt selected" data-status="want">Want to read</button>
+        <button class="status-opt" data-status="reading">Reading</button>
+        <button class="status-opt" data-status="done">Finished</button>
+      </div>
+    </div>
+    <div class="search-loading" id="search-loading">Searching…</div>
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div id="detail-view">
+  <div class="detail-header">
+    <button class="back-btn" id="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="detail-header-info">
+      <div class="detail-book-title" id="detail-title"></div>
+      <div class="detail-book-author" id="detail-author"></div>
+    </div>
+    <img class="detail-cover-thumb" id="detail-thumb" src="" alt="" />
+  </div>
+  <div class="notes-section">
+    <textarea class="note-textarea" id="note-textarea" placeholder="Write a thought, quote, or key idea…"></textarea>
+    <button class="save-note-btn" id="save-note-btn" disabled>Save entry</button>
+  </div>
+  <hr class="notes-divider" />
+  <div class="entries-section" id="entries-section">
+    <div id="notes-list"></div>
+  </div>
+  <div class="detail-status-bar">
+    <button class="detail-status-btn" data-status="want">Want to read</button>
+    <button class="detail-status-btn" data-status="reading">Reading</button>
+    <button class="detail-status-btn" data-status="done">Finished</button>
+  </div>
+  <div class="detail-actions">
+    <button class="export-btn" id="export-btn">Export notes</button>
+    <button class="delete-book-btn" id="delete-book-btn">Remove book</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://mrzdxzkzoktormyulxux.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yemR4emt6b2t0b3JteXVseHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0NzI4NjIsImV4cCI6MjA5ODA0ODg2Mn0.P7xqJDKkhwhyahQCXGEZvjEyzfDaSeKv2D_0mjC_wQs';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const COLORS = ['#3B2A1A','#1C2B3A','#2A3320','#3A2020','#1A2A2B','#2B1A3A','#3A2E1A','#1A3A2A'];
+
+let books = [];
+let currentFilter = 'all';
+let currentBookId = null;
+let selectedStatus = 'want';
+let searchTimeout = null;
+let currentUser = null;
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) +
+    ' · ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+}
+
+function showLoading(on) {
+  document.getElementById('loading-screen').classList.toggle('hidden', !on);
+}
+
+function showAuth() {
+  document.getElementById('auth-view').style.display = 'flex';
+  document.getElementById('library-view').style.display = 'none';
+  showLoading(false);
+}
+
+function showLibrary() {
+  document.getElementById('auth-view').style.display = 'none';
+  document.getElementById('library-view').style.display = 'block';
+  showLoading(false);
+  loadBooks();
+}
+
+// ── AUTH ──
+let authMode = 'signin';
+
+document.getElementById('tab-signin').addEventListener('click', () => {
+  authMode = 'signin';
+  document.getElementById('tab-signin').classList.add('active');
+  document.getElementById('tab-signup').classList.remove('active');
+  document.getElementById('auth-submit').textContent = 'Sign in';
+  document.getElementById('auth-error').textContent = '';
+});
+
+document.getElementById('tab-signup').addEventListener('click', () => {
+  authMode = 'signup';
+  document.getElementById('tab-signup').classList.add('active');
+  document.getElementById('tab-signin').classList.remove('active');
+  document.getElementById('auth-submit').textContent = 'Create account';
+  document.getElementById('auth-error').textContent = '';
+});
+
+document.getElementById('auth-submit').addEventListener('click', async () => {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  const btn = document.getElementById('auth-submit');
+
+  if (!email || !password) { errEl.textContent = 'Please enter email and password.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = authMode === 'signin' ? 'Signing in…' : 'Creating account…';
+  errEl.textContent = '';
+
+  let result;
+  if (authMode === 'signin') {
+    result = await sb.auth.signInWithPassword({ email, password });
+  } else {
+    result = await sb.auth.signUp({ email, password });
+  }
+
+  btn.disabled = false;
+  btn.textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
+
+  if (result.error) {
+    errEl.textContent = result.error.message;
+  } else if (authMode === 'signup' && !result.data.session) {
+    errEl.style.color = '#4A7C4E';
+    errEl.textContent = 'Check your email to confirm your account.';
+  }
+});
+
+document.getElementById('signout-btn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  books = [];
+  currentBookId = null;
+  showAuth();
+});
+
+// ── BOOKS ──
+async function loadBooks() {
+  const { data, error } = await sb.from('books').select('*').order('added_at', { ascending: false });
+  if (error) { showToast('Could not load books'); return; }
+  books = data || [];
+  renderShelf();
+}
+
+async function addBook(info) {
+  const existing = books.find(b => b.title === info.title && b.author === info.author);
+  if (existing) { showToast('Already in your library'); document.getElementById('add-overlay').classList.remove('open'); return; }
+
+  const { data, error } = await sb.from('books').insert({
+    title: info.title,
+    author: info.author,
+    cover: info.cover,
+    ol_key: info.olKey,
+    status: selectedStatus,
+    user_id: currentUser.id
+  }).select().single();
+
+  if (error) { showToast('Could not add book'); return; }
+  books.unshift(data);
+  renderShelf();
+  document.getElementById('add-overlay').classList.remove('open');
+  showToast('Added to your library');
+}
+
+async function updateBookStatus(bookId, status) {
+  const { error } = await sb.from('books').update({ status }).eq('id', bookId);
+  if (error) { showToast('Could not update status'); return; }
+  const book = books.find(b => b.id === bookId);
+  if (book) book.status = status;
+  renderShelf();
+  document.querySelectorAll('.detail-status-btn').forEach(b => b.classList.toggle('active', b.dataset.status === status));
+  showToast('Status updated');
+}
+
+async function deleteBook(bookId) {
+  const { error } = await sb.from('books').delete().eq('id', bookId);
+  if (error) { showToast('Could not remove book'); return; }
+  books = books.filter(b => b.id !== bookId);
+  renderShelf();
+  document.getElementById('detail-view').classList.remove('open');
+  showToast('Book removed');
+}
+
+// ── NOTES ──
+async function loadNotes(bookId) {
+  const { data, error } = await sb.from('notes').select('*').eq('book_id', bookId).order('created_at', { ascending: true });
+  if (error) { showToast('Could not load notes'); return []; }
+  return data || [];
+}
+
+async function saveNote(bookId, text) {
+  const { data, error } = await sb.from('notes').insert({
+    book_id: bookId,
+    user_id: currentUser.id,
+    text
+  }).select().single();
+  if (error) { showToast('Could not save note'); return null; }
+  return data;
+}
+
+async function deleteNote(noteId) {
+  const { error } = await sb.from('notes').delete().eq('id', noteId);
+  if (error) { showToast('Could not delete note'); return false; }
+  return true;
+}
+
+// ── RENDER ──
+function renderShelf() {
+  const shelf = document.getElementById('shelf');
+  const empty = document.getElementById('empty-state');
+  const meta = document.getElementById('header-meta');
+  const label = document.getElementById('shelf-label');
+  const filtered = currentFilter === 'all' ? books : books.filter(b => b.status === currentFilter);
+
+  meta.textContent = books.length + ' book' + (books.length !== 1 ? 's' : '');
+  label.textContent = currentFilter === 'all' ? 'Your library' :
+    currentFilter === 'want' ? 'Want to read' :
+    currentFilter === 'reading' ? 'Currently reading' : 'Finished';
+
+  shelf.innerHTML = '';
+  if (filtered.length === 0) { empty.classList.add('visible'); return; }
+  empty.classList.remove('visible');
+
+  filtered.forEach(book => {
+    const card = document.createElement('div');
+    card.className = 'book-card';
+    card.onclick = () => openDetail(book.id);
+    const coverBg = COLORS[Math.abs(book.id.charCodeAt(0) + book.id.charCodeAt(1)) % COLORS.length];
+    card.innerHTML = `
+      <div class="book-cover-wrap" style="background:${coverBg}">
+        ${book.cover ? `<img src="${book.cover}" alt="${book.title}" loading="lazy" />` : `<div class="cover-placeholder">${book.title}</div>`}
+        <div class="status-dot dot-${book.status}"></div>
+        <div class="note-count-badge" id="badge-${book.id}"></div>
+      </div>
+      <div class="book-title">${book.title}</div>
+      <div class="book-author">${book.author}</div>
+    `;
+    shelf.appendChild(card);
+  });
+
+  // Load note counts async
+  filtered.forEach(async book => {
+    const { count } = await sb.from('notes').select('id', { count: 'exact', head: true }).eq('book_id', book.id);
+    const badge = document.getElementById(`badge-${book.id}`);
+    if (badge && count > 0) {
+      badge.className = 'note-count';
+      badge.textContent = count + ' note' + (count !== 1 ? 's' : '');
+    }
+  });
+}
+
+// ── FILTERS ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderShelf();
+  });
+});
+
+// ── ADD BOOK ──
+document.getElementById('open-add-btn').addEventListener('click', () => {
+  document.getElementById('add-overlay').classList.add('open');
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-results').classList.remove('visible');
+  document.getElementById('search-results').innerHTML = '';
+  document.getElementById('search-loading').classList.remove('visible');
+  setTimeout(() => document.getElementById('search-input').focus(), 150);
+});
+
+document.getElementById('add-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('add-overlay')) document.getElementById('add-overlay').classList.remove('open');
+});
+
+document.querySelectorAll('.status-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.status-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedStatus = btn.dataset.status;
+  });
+});
+
+document.getElementById('search-input').addEventListener('input', e => {
+  const q = e.target.value.trim();
+  clearTimeout(searchTimeout);
+  if (q.length < 2) {
+    document.getElementById('search-results').classList.remove('visible');
+    document.getElementById('search-loading').classList.remove('visible');
+    return;
+  }
+  document.getElementById('search-loading').classList.add('visible');
+  document.getElementById('search-results').classList.remove('visible');
+  searchTimeout = setTimeout(() => searchBooks(q), 400);
+});
+
+async function searchBooks(query) {
+  try {
+    const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=8&fields=key,title,author_name,cover_i`;
+    const res = await fetch(url);
+    const data = await res.json();
+    document.getElementById('search-loading').classList.remove('visible');
+    renderSearchResults(data.docs || []);
+  } catch(err) {
+    document.getElementById('search-loading').classList.remove('visible');
+    showToast('Search failed — check connection');
+  }
+}
+
+function renderSearchResults(docs) {
+  const el = document.getElementById('search-results');
+  el.innerHTML = '';
+  if (docs.length === 0) {
+    el.innerHTML = '<div style="padding:14px;text-align:center;font-size:13px;color:#8B7355;font-style:italic;font-family:Lora,serif">No books found</div>';
+    el.classList.add('visible');
+    return;
+  }
+  docs.forEach(doc => {
+    const item = document.createElement('div');
+    item.className = 'search-item';
+    const coverId = doc.cover_i;
+    const thumbUrl = coverId ? `https://covers.openlibrary.org/b/id/${coverId}-S.jpg` : '';
+    const author = (doc.author_name || ['Unknown author'])[0];
+    item.innerHTML = `
+      ${thumbUrl ? `<img class="search-thumb" src="${thumbUrl}" alt="" />` : `<div class="search-thumb" style="background:#EDE8DC;border-radius:2px;"></div>`}
+      <div class="search-info">
+        <div class="search-title">${doc.title}</div>
+        <div class="search-author">${author}</div>
+      </div>
+    `;
+    item.addEventListener('click', () => addBook({ title: doc.title, author, cover: coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : null, olKey: doc.key }));
+    el.appendChild(item);
+  });
+  el.classList.add('visible');
+  el.scrollTop = 0;
+}
+
+// ── DETAIL ──
+async function openDetail(id) {
+  currentBookId = id;
+  const book = books.find(b => b.id === id);
+  if (!book) return;
+
+  document.getElementById('detail-title').textContent = book.title;
+  document.getElementById('detail-author').textContent = book.author;
+
+  const thumb = document.getElementById('detail-thumb');
+  if (book.cover) { thumb.src = book.cover; thumb.style.display = 'block'; }
+  else { thumb.style.display = 'none'; }
+
+  document.querySelectorAll('.detail-status-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.status === book.status);
+  });
+
+  document.getElementById('note-textarea').value = '';
+  document.getElementById('save-note-btn').disabled = true;
+  document.getElementById('notes-list').innerHTML = '<div class="no-notes" style="color:var(--brown-light);font-style:italic;font-family:Lora,serif;font-size:14px">Loading…</div>';
+
+  const dv = document.getElementById('detail-view');
+  dv.classList.add('open');
+  dv.scrollTop = 0;
+
+  const notes = await loadNotes(id);
+  renderNotes(notes);
+}
+
+document.getElementById('back-btn').addEventListener('click', () => {
+  document.getElementById('detail-view').classList.remove('open');
+  currentBookId = null;
+  renderShelf();
+});
+
+document.querySelectorAll('.detail-status-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!currentBookId) return;
+    updateBookStatus(currentBookId, btn.dataset.status);
+  });
+});
+
+function renderNotes(notes) {
+  const list = document.getElementById('notes-list');
+  list.innerHTML = '';
+  if (!notes || notes.length === 0) {
+    list.innerHTML = '<div class="no-notes">No entries yet.</div>';
+    return;
+  }
+  [...notes].reverse().forEach(note => {
+    const entry = document.createElement('div');
+    entry.className = 'note-entry';
+    entry.innerHTML = `
+      <div class="note-date">${formatDate(note.created_at)}</div>
+      <div class="note-text">${note.text}</div>
+      <button class="note-delete" data-id="${note.id}">Delete</button>
+    `;
+    list.appendChild(entry);
+  });
+  list.querySelectorAll('.note-delete').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Delete this entry?')) return;
+      const ok = await deleteNote(btn.dataset.id);
+      if (ok) {
+        const updated = await loadNotes(currentBookId);
+        renderNotes(updated);
+        renderShelf();
+        showToast('Entry deleted');
+      }
+    });
+  });
+}
+
+const noteTA = document.getElementById('note-textarea');
+const saveBtn = document.getElementById('save-note-btn');
+noteTA.addEventListener('input', () => { saveBtn.disabled = noteTA.value.trim().length === 0; });
+
+saveBtn.addEventListener('click', async () => {
+  if (!currentBookId) return;
+  const text = noteTA.value.trim();
+  if (!text) return;
+  saveBtn.disabled = true;
+  const note = await saveNote(currentBookId, text);
+  if (note) {
+    noteTA.value = '';
+    const updated = await loadNotes(currentBookId);
+    renderNotes(updated);
+    renderShelf();
+    showToast('Entry saved');
+    document.getElementById('entries-section').scrollIntoView({ behavior: 'smooth' });
+  }
+});
+
+// ── EXPORT ──
+document.getElementById('export-btn').addEventListener('click', async () => {
+  const book = books.find(b => b.id === currentBookId);
+  if (!book) return;
+  const notes = await loadNotes(currentBookId);
+  let out = `${book.title}\n${book.author}\n${'─'.repeat(40)}\n\n`;
+  notes.forEach(n => { out += `[${formatDate(n.created_at)}]\n${n.text}\n\n`; });
+  const blob = new Blob([out], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = book.title.replace(/[^a-z0-9]/gi, '_').toLowerCase() + '_notes.txt';
+  a.click();
+  showToast('Notes exported');
+});
+
+// ── DELETE BOOK ──
+document.getElementById('delete-book-btn').addEventListener('click', async () => {
+  if (!currentBookId) return;
+  if (!confirm('Remove this book and all its notes?')) return;
+  await deleteBook(currentBookId);
+});
+
+// ── INIT ──
+sb.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    currentUser = session.user;
+    showLibrary();
+  } else {
+    currentUser = null;
+    showAuth();
+  }
+});
+</script>
+</body>
+</html>
